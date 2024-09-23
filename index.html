@@ -3,31 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NoteSage</title>
+  <title>Notes Sharing Platform</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header>
     <h1>Notes Sharing Platform</h1>
-    <p>Upload, share, and download notes easily!</p>
+    <p>Upload, share, and download notes for different streams!</p>
   </header>
 
   <main>
+    <!-- BTech Section -->
     <section class="upload-section">
-      <h2>Upload a Note</h2>
-      <input type="file" id="fileInput" />
-      <button id="uploadButton">Upload</button>
-      <p id="uploadStatus"></p>
+      <h2>BTech Notes</h2>
+      <input type="file" id="fileInputBTech" />
+      <button id="uploadButtonBTech">Upload BTech Note</button>
+      <p id="uploadStatusBTech"></p>
+
+      <h3>Available BTech Notes</h3>
+      <ul id="notesListBTech"></ul>
     </section>
 
-    <section class="notes-section">
-      <h2>Available Notes</h2>
-      <ul id="notesList"></ul>
+    <!-- MBA Section -->
+    <section class="upload-section">
+      <h2>MBA Notes</h2>
+      <input type="file" id="fileInputMBA" />
+      <button id="uploadButtonMBA">Upload MBA Note</button>
+      <p id="uploadStatusMBA"></p>
+
+      <h3>Available MBA Notes</h3>
+      <ul id="notesListMBA"></ul>
+    </section>
+
+    <!-- BSc Section -->
+    <section class="upload-section">
+      <h2>BSc Notes</h2>
+      <input type="file" id="fileInputBSc" />
+      <button id="uploadButtonBSc">Upload BSc Note</button>
+      <p id="uploadStatusBSc"></p>
+
+      <h3>Available BSc Notes</h3>
+      <ul id="notesListBSc"></ul>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2024 NoteSage</p>
+    <p>&copy; 2024 Notes Sharing Platform</p>
   </footer>
 
   <script src="script.js"></script>
