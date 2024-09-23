@@ -1,48 +1,56 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const multer = require('multer');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const app = express();
-const PORT = 3000;
+// Elements from the DOM
+const fileInput = document.getElementById('fileInput');
+const uploadButton = document.getElementById('uploadButton');
+const notesList = document.getElementById('notesList');
+const uploadStatus = document.getElementById('uploadStatus');
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/notesdb', { useNewUrlParser: true, useUnifiedTopology: true });
+// Store notes in localStorage
+let notes = JSON.parse(localStorage.getItem('notes')) || [];
 
-// Define Note Schema
-const noteSchema = new mongoose.Schema({
-    title: String,
-    content: String,
-    fileUrl: String,
-    uploader: String,
-    tags: [String]
+// Function to display notes
+function displayNotes() {
+  notesList.innerHTML = ''; // Clear existing notes
+
+  notes.forEach((note, index) => {
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `
+      <a href="${note.url}" download="${note.name}">${note.name}</a>
+      <button onclick="deleteNote(${index})">Delete</button>
+    `;
+    notesList.appendChild(listItem);
+  });
+}
+
+// Function to handle file upload
+uploadButton.addEventListener('click', () => {
+  const file = fileInput.files[0];
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const note = {
+        name: file.name,
+        url: event.target.result
+      };
+      
+      notes.push(note);
+      localStorage.setItem('notes', JSON.stringify(notes));
+      displayNotes();
+      uploadStatus.textContent = "File uploaded successfully!";
+    };
+    
+    reader.readAsDataURL(file);
+  } else {
+    uploadStatus.textContent = "Please select a file first!";
+  }
 });
 
-const Note = mongoose.model('Note', noteSchema);
+// Function to delete a note
+function deleteNote(index) {
+  notes.splice(index, 1);
+  localStorage.setItem('notes', JSON.stringify(notes));
+  displayNotes();
+}
 
-// Middleware for handling file uploads
-const upload = multer({ dest: 'uploads/' });
-
-// Upload Notes
-app.post('/upload', upload.single('noteFile'), (req, res) => {
-    const newNote = new Note({
-        title: req.body.title,
-        content: req.body.content,
-        fileUrl: req.file.path,
-        uploader: req.body.uploader,
-        tags: req.body.tags.split(',')
-    });
-    newNote.save()
-        .then(() => res.send('Note uploaded successfully'))
-        .catch(err => res.status(400).send('Error uploading note'));
-});
-
-// Get All Notes
-app.get('/notes', (req, res) => {
-    Note.find()
-        .then(notes => res.json(notes))
-        .catch(err => res.status(400).send('Error fetching notes'));
-});
-
-// Start the server
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+// Initial rendering of notes
+displayNotes();
