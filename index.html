@@ -1,40 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
+// Elements from the DOM
+const fileInput = document.getElementById('fileInput');
+const uploadButton = document.getElementById('uploadButton');
+const notesList = document.getElementById('notesList');
+const uploadStatus = document.getElementById('uploadStatus');
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Student Notes Sharing</title>
-    <link rel="stylesheet" href="style.css" />
-</head>
+// Store notes in localStorage
+let notes = JSON.parse(localStorage.getItem('notes')) || [];
 
-<body>
-    <header>
-        <nav>
-            <h1>NoteSage</h1>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/upload">Upload Notes</a></li>
-                <li><a href="/notes">Browse Notes</a></li>
-                <li><a href="/login">Login</a></li>
-            </ul>
-        </nav>
-    </header>
+// Function to display notes
+function displayNotes() {
+  notesList.innerHTML = ''; // Clear existing notes
 
-    <section id="home">
-        <h2>Welcome to NoteSage!</h2>
-        <p>Upload, Share, and Access Notes with Ease!</p>
-    </section>
+  notes.forEach((note, index) => {
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `
+      <a href="${note.url}" download="${note.name}">${note.name}</a>
+      <button onclick="deleteNote(${index})">Delete</button>
+    `;
+    notesList.appendChild(listItem);
+  });
+}
 
-    <!-- Get Started Button at the bottom -->
-    <section id="get-started" style="text-align: center; margin-top: 50px;">
-        <a href="/signup" class="cta-button" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Get Started</a>
-    </section>
+// Function to handle file upload
+uploadButton.addEventListener('click', () => {
+  const file = fileInput.files[0];
 
-    <!-- Footer at the very bottom -->
-    <footer style="position: fixed; bottom: 0; width: 100%; text-align: center; background-color: #3d3b3b; padding: 10px 0;">
-        <p>&copy; 2024 NoteSage</p>
-    </footer>
-</body>
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const note = {
+        name: file.name,
+        url: event.target.result
+      };
+      
+      notes.push(note);
+      localStorage.setItem('notes', JSON.stringify(notes));
+      displayNotes();
+      uploadStatus.textContent = "File uploaded successfully!";
+    };
+    
+    reader.readAsDataURL(file);
+  } else {
+    uploadStatus.textContent = "Please select a file first!";
+  }
+});
 
-</html>
+// Function to delete a note
+function deleteNote(index) {
+  notes.splice(index, 1);
+  localStorage.setItem('notes', JSON.stringify(notes));
+  displayNotes();
+}
+
+// Initial rendering of notes
+displayNotes();
